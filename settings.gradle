@@ -1,0 +1,3 @@
+rootProject.name = 'todo-msa'
+
+include 'eureka-server', 'api-gateway', 'user-service', 'task-service', 'tag-service'
