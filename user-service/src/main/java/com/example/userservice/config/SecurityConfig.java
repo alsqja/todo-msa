@@ -21,9 +21,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                new AntPathRequestMatcher("/users/signup"),
-                                new AntPathRequestMatcher("/users/login"),
-                                new AntPathRequestMatcher("/users/check-session")
+                                new AntPathRequestMatcher("/auth/signup"),
+                                new AntPathRequestMatcher("/auth/login"),
+                                new AntPathRequestMatcher("/auth/check-session")
                         ).permitAll()   // 회원가입, 로그인, 세션 체크는 모두 접근 가능
                         .anyRequest().authenticated()   // 나머지 요청은 인증 필요
                 )
