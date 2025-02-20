@@ -4,8 +4,29 @@ server:
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true   # 서비스 이름 소문자로 변환
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+        - id: task-service
+          uri: lb://task-service
+          predicates:
+            - Path=/tasks/**
+        - id: tag-service
+          uri: lb://tag-service
+          predicates:
+            - Path=/tags/**
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
