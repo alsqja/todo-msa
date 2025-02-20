@@ -1,13 +1,18 @@
 package com.example.userservice.controller;
 
+import com.example.userservice.model.dto.JwtAuthResponse;
 import com.example.userservice.model.dto.LoginReqDto;
 import com.example.userservice.model.dto.UserDto;
 import com.example.userservice.model.dto.UserSignupReqDto;
 import com.example.userservice.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +32,26 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody LoginReqDto dto, HttpSession session) {
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginReqDto dto) {
 
-        UserDto result = userService.login(dto);
-
-        session.setAttribute("username", dto.username());
+        JwtAuthResponse result = userService.login(dto);
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) throws UsernameNotFoundException {
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+
+            return ResponseEntity.noContent().build();
+        }
+
+        throw new UsernameNotFoundException("로그인이 먼저 필요합니다.");
     }
 }
