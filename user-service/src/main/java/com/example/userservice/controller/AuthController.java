@@ -1,11 +1,12 @@
 package com.example.userservice.controller;
 
+import com.example.userservice.model.dto.LoginReqDto;
 import com.example.userservice.model.dto.UserDto;
 import com.example.userservice.model.dto.UserSignupReqDto;
 import com.example.userservice.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,16 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<UserDto> signup(@Valid @RequestBody UserSignupReqDto dto) {
 
+        return ResponseEntity.ok(userService.signup(dto));
+    }
 
-        return new ResponseEntity<>(userService.signup(dto), HttpStatus.CREATED);
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@RequestBody LoginReqDto dto, HttpSession session) {
+
+        UserDto result = userService.login(dto);
+
+        session.setAttribute("username", dto.username());
+
+        return ResponseEntity.ok(result);
     }
 }

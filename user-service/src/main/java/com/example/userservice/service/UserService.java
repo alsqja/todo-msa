@@ -1,6 +1,7 @@
 package com.example.userservice.service;
 
 import com.example.userservice.model.User;
+import com.example.userservice.model.dto.LoginReqDto;
 import com.example.userservice.model.dto.UserDto;
 import com.example.userservice.model.dto.UserSignupReqDto;
 import com.example.userservice.repository.UserRepository;
@@ -33,6 +34,17 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        return new UserDto(user);
+    }
+
+    public UserDto login(LoginReqDto dto) {
+
+        User user = userRepository.findByUsername(dto.username()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or password is incorrect"));
+
+        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or password is incorrect");
+        }
 
         return new UserDto(user);
     }
