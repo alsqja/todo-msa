@@ -35,7 +35,7 @@ public class Task {
     private String description;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;  // 작성자 (User ID, FK)
+    private Long userId;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskTag> tags = new ArrayList<>();
