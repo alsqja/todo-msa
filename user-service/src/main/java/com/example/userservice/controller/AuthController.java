@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,5 +54,13 @@ public class AuthController {
         }
 
         throw new UsernameNotFoundException("로그인이 먼저 필요합니다.");
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<Long> check(Authentication authentication) {
+
+        String username = authentication.getName();
+
+        return ResponseEntity.ok(userService.findUserId(username));
     }
 }

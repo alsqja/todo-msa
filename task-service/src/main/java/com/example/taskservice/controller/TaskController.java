@@ -2,7 +2,8 @@ package com.example.taskservice.controller;
 
 import com.example.taskservice.model.Task;
 import com.example.taskservice.service.TaskService;
-import jakarta.servlet.http.HttpSession;
+import com.example.taskservice.service.UserServiceClient;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,42 +21,54 @@ import java.util.List;
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskController {
+
     private final TaskService taskService;
+    private final UserServiceClient userServiceClient;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getTasks(HttpSession session) {
-        Long userId = (Long) session.getAttribute("user_id");
+    public ResponseEntity<List<Task>> getTasks(HttpServletRequest request) {
+
+        Long userId = getUserIdFromToken(request);
+
         List<Task> tasks = taskService.getTasksByUserId(userId);
+
         return ResponseEntity.ok(tasks);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id, HttpSession session) {
-        Long userId = (Long) session.getAttribute("user_id");
-        Task task = taskService.getTaskById(id, userId);
-        return ResponseEntity.ok(task);
-    }
-
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task, HttpSession session) {
+    public ResponseEntity<Task> createTask(@RequestBody Task task, HttpServletRequest request) {
 
-        Long userId = (Long) session.getAttribute("user_id");
-        task.setUserId(userId);
-        Task savedTask = taskService.createTask(task);
-        return ResponseEntity.ok(savedTask);
+        Long userId = getUserIdFromToken(request);
+
+        Task createdTask = taskService.createTask(task, userId);
+
+        return ResponseEntity.ok(createdTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask, HttpSession session) {
-        Long userId = (Long) session.getAttribute("user_id");
-        Task task = taskService.updateTask(id, updatedTask, userId);
-        return ResponseEntity.ok(task);
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task, HttpServletRequest request) {
+
+        Long userId = getUserIdFromToken(request);
+
+        Task updatedTask = taskService.updateTask(id, task, userId);
+
+        return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id, HttpSession session) {
-        Long userId = (Long) session.getAttribute("user_id");
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id, HttpServletRequest request) {
+
+        Long userId = getUserIdFromToken(request);
+
         taskService.deleteTask(id, userId);
+
         return ResponseEntity.noContent().build();
+    }
+
+    private Long getUserIdFromToken(HttpServletRequest request) {
+
+        String token = request.getHeader("Authorization");
+
+        return userServiceClient.getUserIdFromToken(token);
     }
 }

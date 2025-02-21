@@ -65,4 +65,12 @@ public class UserService {
 
         return new JwtAuthResponse(accessToken);
     }
+
+    public Long findUserId(String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return user.getId();
+    }
 }
