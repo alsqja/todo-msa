@@ -41,7 +41,6 @@ public class TagController {
     public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
 
         Tag createdTag = tagService.createTag(tag);
-
         return ResponseEntity.ok(createdTag);
     }
 
