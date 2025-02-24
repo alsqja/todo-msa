@@ -39,4 +39,10 @@ public class Task {
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskTag> tags = new ArrayList<>();
+
+    public Task(String title, String description, Long userId) {
+        this.title = title;
+        this.description = description;
+        this.userId = userId;
+    }
 }

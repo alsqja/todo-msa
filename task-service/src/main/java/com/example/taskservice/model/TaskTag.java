@@ -31,4 +31,9 @@ public class TaskTag {
 
     @Column(name = "tag_id", nullable = false)
     private Long tagId;
+
+    public TaskTag(Task task, Long tagId) {
+        this.task = task;
+        this.tagId = tagId;
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.taskservice.controller;
 
 import com.example.taskservice.model.Task;
+import com.example.taskservice.model.dto.TaskReqDto;
+import com.example.taskservice.model.dto.TaskResDto;
 import com.example.taskservice.service.TaskService;
 import com.example.taskservice.service.UserServiceClient;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,21 +28,21 @@ public class TaskController {
     private final UserServiceClient userServiceClient;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getTasks(HttpServletRequest request) {
+    public ResponseEntity<List<TaskResDto>> getTasks(HttpServletRequest request) {
 
         Long userId = getUserIdFromToken(request);
 
-        List<Task> tasks = taskService.getTasksByUserId(userId);
+        List<TaskResDto> tasks = taskService.getTasksByUserId(userId);
 
         return ResponseEntity.ok(tasks);
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task, HttpServletRequest request) {
+    public ResponseEntity<TaskResDto> createTask(@RequestBody TaskReqDto task, HttpServletRequest request) {
 
         Long userId = getUserIdFromToken(request);
 
-        Task createdTask = taskService.createTask(task, userId);
+        TaskResDto createdTask = taskService.createTask(task, userId);
 
         return ResponseEntity.ok(createdTask);
     }
