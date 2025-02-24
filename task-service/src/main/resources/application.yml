@@ -7,7 +7,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/todo_msa_task
+    url: jdbc:mysql://db:3306/todo_msa_task
     username: root
     password: 2626
     hikari:
@@ -26,6 +26,6 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://eureka-server:8761/eureka
     register-with-eureka: true
     fetch-registry: true

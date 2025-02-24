@@ -1,90 +1,66 @@
-version: '3.9'
+version: '3.8'
 
 services:
   eureka-server:
-    image: openjdk:17
+    image: eureka-server:latest
     container_name: eureka-server
-    volumes:
-      - ./eureka-server:/app
-    working_dir: /app
-    command: ["./gradlew", "bootRun", "-Dspring.profiles.active=dev"]
+    build:
+      context: ./eureka-server
     ports:
       - "8761:8761"
-      - "5001:5005"     # 디버그 포트
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
   api-gateway:
-    image: openjdk:17
+    image: api-gateway:latest
     container_name: api-gateway
-    volumes:
-      - ./api-gateway:/app
-    working_dir: /app
-    command: ["./gradlew", "bootRun", "-Dspring.profiles.active=dev"]
+    build:
+      context: ./api-gateway
     ports:
       - "8080:8080"
-      - "5002:5005"     # 디버그 포트
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      - eureka-server
 
   user-service:
-    image: openjdk:17
+    image: user-service:latest
     container_name: user-service
-    volumes:
-      - ./user-service:/app
-    working_dir: /app
-    command: ["./gradlew", "bootRun", "-Dspring.profiles.active=dev"]
+    build:
+      context: ./user-service
     ports:
       - "8081:8081"
-      - "5003:5005"     # 디버그 포트
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       - eureka-server
+      - db
 
   task-service:
-    image: openjdk:17
+    image: task-service:latest
     container_name: task-service
-    volumes:
-      - ./task-service:/app
-    working_dir: /app
-    command: ["./gradlew", "bootRun", "-Dspring.profiles.active=dev"]
+    build:
+      context: ./task-service
     ports:
       - "8082:8082"
-      - "5004:5005"     # 디버그 포트
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       - eureka-server
+      - db
 
   tag-service:
-    image: openjdk:17
+    image: tag-service:latest
     container_name: tag-service
-    volumes:
-      - ./tag-service:/app
-    working_dir: /app
-    command: ["./gradlew", "bootRun", "-Dspring.profiles.active=dev"]
+    build:
+      context: ./tag-service
     ports:
       - "8083:8083"
-      - "5005:5005"     # 디버그 포트
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       - eureka-server
+      - db
 
-#  mysql:
-#    image: mysql:latest
-#    container_name: todo-mysql
-#    environment:
-#      MYSQL_ROOT_PASSWORD: password
-#      MYSQL_DATABASE: user_db
-#      MYSQL_DATABASE_2: task_db
-#      MYSQL_DATABASE_3: tag_db
-#      TZ: Asia/Seoul
-#    ports:
-#      - "3306:3306"
-#    volumes:
-#      - mysql-data:/var/lib/mysql
+  db:
+    image: mysql:latest
+    container_name: todo-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 2626
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
 
-# volumes:
-#  mysql-data:
+volumes:
+  db-data:
