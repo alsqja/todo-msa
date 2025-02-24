@@ -29,6 +29,7 @@ services:
     depends_on:
       - eureka-server
       - db
+    restart: always
 
   task-service:
     image: task-service:latest
@@ -40,6 +41,7 @@ services:
     depends_on:
       - eureka-server
       - db
+    restart: always
 
   tag-service:
     image: tag-service:latest
@@ -51,16 +53,20 @@ services:
     depends_on:
       - eureka-server
       - db
+    restart: always
 
   db:
     image: mysql:latest
     container_name: todo-mysql
     environment:
       MYSQL_ROOT_PASSWORD: 2626
+      MYSQL_DATABASE: todo_msa_user  # 첫 번째 DB (기본 생성)
+      MYSQL_INITDB_SKIP_TZINFO: 1    # 타임존 초기화 건너뛰기
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db-data:/var/lib/mysql
+      - ./init-scripts:/docker-entrypoint-initdb.d  # 초기화 스크립트 연결
 
 volumes:
   db-data:
